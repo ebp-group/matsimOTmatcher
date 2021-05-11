@@ -12,7 +12,8 @@ public abstract class Constants {
 	
 	public static final String PATH_DIENSTELLEN = "T:\\220289\\40_BEARBEITUNG\\43_Berechnungen_Untersuchungen\\Inputs OT_MATSim matcher\\dienststellen_full.csv";
 
-	public static final String MATCHED_TIMETABLES_FILE = "T:\\220289\\40_BEARBEITUNG\\43_Berechnungen_Untersuchungen\\Inputs OT_MATSim matcher\\matchedTimetables.csv";
+	public static final String MATCHED_TIMETABLES_FILE = "T:\\220289\\40_BEARBEITUNG\\43_Berechnungen_Untersuchungen\\Matcher Outputs\\matchedTimetables_210506.csv";
 
-	
+	public static final String PATH_NEW_TRANSIT_SCHEDULE = "T:\\220289\\40_BEARBEITUNG\\43_Berechnungen_Untersuchungen\\Matcher Outputs\\modifiedTransitSchedule.xml.gz";
+
 }

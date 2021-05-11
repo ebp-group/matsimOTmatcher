@@ -7,14 +7,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
-
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.pt.transitSchedule.api.TransitLine;
 import org.matsim.pt.transitSchedule.api.TransitRoute;
 import org.matsim.pt.transitSchedule.api.TransitSchedule;
+import org.matsim.pt.transitSchedule.api.TransitScheduleWriter;
+
 import OTtimetableObject.Timetable;
 import common.Constants;
+import scheduleModifier.TransitScheduleModifier;
 
 public class MainClass {
 
@@ -37,7 +39,16 @@ public class MainClass {
 		Matcher matcher = new Matcher();
 		List<MatchedTimetables> matchedTimetables = matcher.matchMATSimToOT(schedule, otTimetable, listenHst);
 		
+
 		
+		TransitScheduleModifier modifier = new TransitScheduleModifier();
+		
+		TransitSchedule newSchedule = modifier.modifiedTransitSchedule(schedule, matchedTimetables, otTimetable);
+		
+		//Write new Schedule to File
+		TransitScheduleWriter writer = new TransitScheduleWriter(newSchedule);
+		writer.writeFile(Constants.PATH_NEW_TRANSIT_SCHEDULE);
+	
 		//Now find missing ones: 
 	    List<String> lookup = otTimetable.getCourseList().stream()
                 .map(d -> d.getCourseID())
@@ -73,7 +84,6 @@ public class MainClass {
 	    
 	    //Write to file
 	    Matcher.writeMatchedTable(matchedTimetables);
-	
 	    
 	
 	}

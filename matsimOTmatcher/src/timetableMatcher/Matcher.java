@@ -171,6 +171,10 @@ public class Matcher {
              				    			match.setRouteIdMATSim(routeName);
              				    			match.setLineIdMATSim(transitLine);
              				    			
+             				    			
+             				    			//CHANGE THE MATSim TRANSIT SCHEDULE HERE
+             				    			
+             				    			
 
              				    			matched.add(match);
              				    		}
@@ -182,6 +186,7 @@ public class Matcher {
     									    		    
     				    	 for(Map.Entry<Id<Departure>, Departure> departure:departures.entrySet()) {
     				    		double depTime = departure.getValue().getDepartureTime();
+    				    		String vehicleIdMATSim = departure.getValue().getVehicleId().toString();
     				    		
 
     				    		
@@ -199,9 +204,15 @@ public class Matcher {
     				    			match.setDepTimeFirstStopOT(seconds);
     				    			match.setRouteIdMATSim(routeName);
     				    			match.setLineIdMATSim(transitLine);
-    				    			
-    				    		
+    				    			match.setVehicleIdMATSim(vehicleIdMATSim);	    		
     				    			matched.add(match);
+    				    			
+    				    			
+    				    			
+    				    			
+    				    			
+    				    			
+    				    			
     				    		}
      				    	 }
         				     }
@@ -331,12 +342,12 @@ public class Matcher {
  public static void writeMatchedTable(List<MatchedTimetables> matchMATSimToOT) throws IOException {
 		BufferedWriter matchedTimetablesWriter = new BufferedWriter(new FileWriter(Constants.MATCHED_TIMETABLES_FILE));
 		matchedTimetablesWriter.write(
-				"CourseIdOT;LineIdMATSim;RouteIdMATSim;DepTimeFirstStopMATSim;DepTimeFirstStopOT");
+				"CourseIdOT;LineIdMATSim;RouteIdMATSim;VehicleIdMATSim;DepTimeFirstStopMATSim;DepTimeFirstStopOT");
 		matchedTimetablesWriter.newLine();
 		
 		for(MatchedTimetables match:matchMATSimToOT) {
 
-			String line =  match.getCourseIdOT() + ";" + match.getLineIdMATSim()  + ";" + match.getRouteIdMATSim() +";"+
+			String line =  match.getCourseIdOT() + ";" + match.getLineIdMATSim()  + ";" + match.getRouteIdMATSim() +";"+ match.getVehicleIdMATSim() +";"+
 					match.getDepTimeFirstStopMATsim() + ";"+ match.getDepTimeFirstStopOT();
 			
 			matchedTimetablesWriter.write(line);
