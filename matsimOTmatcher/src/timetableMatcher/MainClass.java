@@ -5,8 +5,11 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
+
+import org.apache.commons.lang3.SerializationUtils;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.pt.transitSchedule.api.TransitLine;
@@ -17,6 +20,7 @@ import org.matsim.pt.transitSchedule.api.TransitScheduleWriter;
 import OTtimetableObject.Timetable;
 import common.Constants;
 import scheduleModifier.TransitScheduleModifier;
+
 
 public class MainClass {
 
@@ -40,13 +44,15 @@ public class MainClass {
 		List<MatchedTimetables> matchedTimetables = matcher.matchMATSimToOT(schedule, otTimetable, listenHst);
 		
 
-		
+		//Modify MATSim transit schedule based on OpenTrack timetable
 		TransitScheduleModifier modifier = new TransitScheduleModifier();
+
 		
-		TransitSchedule newSchedule = modifier.modifiedTransitSchedule(schedule, matchedTimetables, otTimetable);
-		
+//		TransitSchedule newSchedule = modifier.modifySchedule(schedule, matchedTimetables, otTimetable, listenHst);
+		modifier.modifySchedule(schedule, matchedTimetables, otTimetable, listenHst);
+
 		//Write new Schedule to File
-		TransitScheduleWriter writer = new TransitScheduleWriter(newSchedule);
+		TransitScheduleWriter writer = new TransitScheduleWriter(schedule);
 		writer.writeFile(Constants.PATH_NEW_TRANSIT_SCHEDULE);
 	
 		//Now find missing ones: 

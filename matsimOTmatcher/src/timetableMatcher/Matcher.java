@@ -27,6 +27,10 @@ import common.Constants;
 
 /**
  * @author Lucas Meyer de Freitas, EBP
+ * In this class, the static timetables of OpenTrack and Matsim are matched at a course (trip) level. The result is a 
+ * list of corresponding courses in both timetables. 
+ * The OT timetable must be in an xml format. ->ATTENTION: The first lines of the xml OpenTrack output created by the list must be
+ * deleted. 
  *
  */
 
@@ -34,7 +38,6 @@ public class Matcher {
 	
 	
 	
-//	public List<MatchedTimetables> matchMATSimToOT(TransitSchedule schedule, Timetable otTimetable, HstListen hst){
 	public List<MatchedTimetables> matchMATSimToOT(TransitSchedule schedule, Timetable otTimetable, HstListen hst) throws ParseException{
 
         List<MatchedTimetables> matched = new ArrayList<MatchedTimetables>();
@@ -240,7 +243,7 @@ public class Matcher {
 //		return null;		
 	}
 	
-	private static String getStopCode(TransitRouteStop stop, HstListen liste) {
+	public static String getStopCode(TransitRouteStop stop, HstListen liste) {
 		String stopCode;
 		try {
 		stopCode = stop.getStopFacility().getAttributes().getAttribute("03_Stop_Code").toString();
