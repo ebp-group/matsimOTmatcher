@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.matsim.api.core.v01.Id;
@@ -97,10 +98,10 @@ public class Matcher {
 			//Do not match if only one stop is available
 			if(timetableEntries.size()<2 || thisCourse.getCourseID().toString().contains("X") || thisCourse.getCourseID().toString().startsWith("5")) {
 				i++;
-				System.out.println(thisCourse.getCourseID());
+//				System.out.println(thisCourse.getCourseID());
 			}
 		}
-		System.out.println("COURSES WITH ONLY ONE STOP COUNT IS " + i);    	 
+//		System.out.println("COURSES WITH ONLY ONE STOP COUNT IS " + i);    	 
  	   
         
         for (Map.Entry<Id<TransitLine>, TransitLine> entry : lines.entrySet()) {
@@ -156,7 +157,8 @@ public class Matcher {
             				     } else {
             				    	 for(Map.Entry<Id<Departure>, Departure> departure:departures.entrySet()) {
              				    		double depTime = departure.getValue().getDepartureTime();
-             				    		
+            				    		String vehicleIdMATSim = departure.getValue().getVehicleId().toString();
+
              				    		
              						    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         				    		    Date reference = dateFormat.parse("00:00:00");
@@ -173,7 +175,8 @@ public class Matcher {
              				    			match.setDepTimeFirstStopOT(seconds);
              				    			match.setRouteIdMATSim(routeName);
              				    			match.setLineIdMATSim(transitLine);
-             				    			
+            				    			match.setVehicleIdMATSim(vehicleIdMATSim);	    		
+
              				    			
              				    			//CHANGE THE MATSim TRANSIT SCHEDULE HERE
              				    			
@@ -191,7 +194,7 @@ public class Matcher {
     				    		double depTime = departure.getValue().getDepartureTime();
     				    		String vehicleIdMATSim = departure.getValue().getVehicleId().toString();
     				    		
-
+    				    		
     				    		
     						    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 				    		    Date reference = dateFormat.parse("00:00:00");
@@ -210,12 +213,7 @@ public class Matcher {
     				    			match.setVehicleIdMATSim(vehicleIdMATSim);	    		
     				    			matched.add(match);
     				    			
-    				    			
-    				    			
-    				    			
-    				    			
-    				    			
-    				    			
+    				    		
     				    		}
      				    	 }
         				     }

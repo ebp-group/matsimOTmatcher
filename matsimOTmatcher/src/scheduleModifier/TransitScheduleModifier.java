@@ -165,7 +165,7 @@ public class TransitScheduleModifier {
 	    				 
 		 				 TransitRouteStopImpl.Builder builder = new TransitRouteStopImpl.Builder();
 
-		 				System.out.println(aa);
+//		 				System.out.println(aa);
 	    				 //If stop is not found, just add the time from the last stop
 	    				 if(Objects.isNull(otStop) && aa != 0) {
 	    					builder.arrivalOffset(arrOffsetPrevious + thisArrOffset - matsimArrPrevious);
@@ -223,10 +223,10 @@ public class TransitScheduleModifier {
 					modifiedLine.addRoute(newRoute);
 					
 					List<TransitRouteStop> stopsNewRoute = newRoute.getStops();
-			          System.out.println("StopCodeNewRoute:");
+//			          System.out.println("StopCodeNewRoute:");
 		   	          for (int oo = 0; oo < stopsNewRoute.size(); oo++) {
 		   	        	  TransitRouteStop stopNR = stopsNewRoute.get(oo);
-		   	        	  System.out.println(stopNR.getStopFacility().getAttributes().getAttribute("03_Stop_Code"));
+//		   	        	  System.out.println(stopNR.getStopFacility().getAttributes().getAttribute("03_Stop_Code"));
 		   	        	  
 		   	          }			
 				

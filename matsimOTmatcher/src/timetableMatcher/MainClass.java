@@ -42,7 +42,10 @@ public class MainClass {
 
 		Matcher matcher = new Matcher();
 		List<MatchedTimetables> matchedTimetables = matcher.matchMATSimToOT(schedule, otTimetable, listenHst);
-		
+	    
+	    //Write to file
+	    Matcher.writeMatchedTable(matchedTimetables);
+	    
 
 		//Modify MATSim transit schedule based on OpenTrack timetable
 		TransitScheduleModifier modifier = new TransitScheduleModifier();
@@ -52,8 +55,8 @@ public class MainClass {
 		modifier.modifySchedule(schedule, matchedTimetables, otTimetable, listenHst);
 
 		//Write new Schedule to File
-		TransitScheduleWriter writer = new TransitScheduleWriter(schedule);
-		writer.writeFile(Constants.PATH_NEW_TRANSIT_SCHEDULE);
+//		TransitScheduleWriter writer = new TransitScheduleWriter(schedule);
+//		writer.writeFile(Constants.PATH_NEW_TRANSIT_SCHEDULE);
 	
 		//Now find missing ones: 
 	    List<String> lookup = otTimetable.getCourseList().stream()
@@ -87,10 +90,7 @@ public class MainClass {
 	    allRoutes.removeAll(matchedIds);
 	    
 
-	    
-	    //Write to file
-	    Matcher.writeMatchedTable(matchedTimetables);
-	    
+
 	
 	}
 
