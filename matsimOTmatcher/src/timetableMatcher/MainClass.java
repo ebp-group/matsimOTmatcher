@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -17,6 +19,7 @@ import org.matsim.pt.transitSchedule.api.TransitRoute;
 import org.matsim.pt.transitSchedule.api.TransitSchedule;
 import org.matsim.pt.transitSchedule.api.TransitScheduleWriter;
 
+import OTtimetableObject.Course;
 import OTtimetableObject.Timetable;
 import common.Constants;
 import scheduleModifier.TransitScheduleModifier;
@@ -43,10 +46,28 @@ public class MainClass {
 		Matcher matcher = new Matcher();
 		List<MatchedTimetables> matchedTimetables = matcher.matchMATSimToOT(schedule, otTimetable, listenHst);
 	    
+		
+	    //testing: 
+	     List<Course> otFilter = otTimetable.getCourseList()
+	    		  .stream()
+	    		  .filter(c -> c.getCourseID().equals("29431"))
+	    		  .collect(Collectors.toList());
+	     
+//		  List<String> lines =  new ArrayList<String>();
+//				  lines.add("SBB_2020_009-D-11654");
+//				  lines.add("SBB_2020_009-D-11658");
+//				  lines.add("SBB_2020_009-D-12062");
+//				  lines.add("SBB_2020_011-D-12061");
+	
+
+
+
 	    //Write to file
 	    Matcher.writeMatchedTable(matchedTimetables);
 	    
+	    
 
+	    
 		//Modify MATSim transit schedule based on OpenTrack timetable
 		TransitScheduleModifier modifier = new TransitScheduleModifier();
 

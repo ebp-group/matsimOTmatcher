@@ -7,13 +7,17 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.DoubleToLongFunction;
 import java.util.stream.Collectors;
 import org.matsim.api.core.v01.Id;
 import org.matsim.pt.transitSchedule.api.Departure;
@@ -36,22 +40,17 @@ import common.Constants;
  */
 
 public class Matcher {
-	
-	
-	
+		
 	public List<MatchedTimetables> matchMATSimToOT(TransitSchedule schedule, Timetable otTimetable, HstListen hst) throws ParseException{
 
         List<MatchedTimetables> matched = new ArrayList<MatchedTimetables>();
 		List<Course> courseList = otTimetable.getCourseList();
-		
-		
+				
 		//Before matching to OT timetable, filter it to get only stops which are actually served: 
 		List<Course> filteredCoursesNonFiltered= getfilteredCourses(courseList);
-		
-		
+				
 		//Look into missing station ID's from both stops
-		
-		
+				
 		List<String> allStationID = new ArrayList<String>();
 		for(Course thisCourse:filteredCoursesNonFiltered) {
 			List<TimetableEntry> timetableEntries = thisCourse.getTimetableEntryList();
@@ -59,10 +58,8 @@ public class Matcher {
 				allStationID.add(timEntry.getStationID());
 			}
 		}
-
 		List<String> allStationNamesMATSIM = new ArrayList<String>();
-				
-		
+					
 //First ensure both transit stop lines have the same entries	
         Map<Id<TransitLine>, TransitLine> lines = schedule.getTransitLines();
         
@@ -169,6 +166,19 @@ public class Matcher {
 
              				    		
              				    		if(Math.abs(depTime-seconds)<60*15) {
+             				    			
+             				    	
+             				    			
+             				    			  List<String> linesCheck =  new ArrayList<String>();
+             				    			 linesCheck.add("SBB_2020_009-D-11654");
+             				    			linesCheck.add("SBB_2020_009-D-11658");
+             				    			linesCheck.add("SBB_2020_009-D-12062");
+             								 linesCheck.add("SBB_2020_011-D-12061");
+             								 
+             								 if(linesCheck.contains(transitLine)) {
+             									 System.out.println(transitLine);
+             								 }
+             				    			
              				    			MatchedTimetables match = new MatchedTimetables();
              				    			match.setCourseIdOT(thisCourse.getCourseID());
              				    			match.setDepTimeFirstStopMATsim(depTime);
@@ -180,7 +190,9 @@ public class Matcher {
              				    			
              				    			//CHANGE THE MATSim TRANSIT SCHEDULE HERE
              				    			
-             				    			
+             				    			if("2260".equals(thisCourse.getCourseID().toString())) {
+             				    				System.out.println("STOPHERE");
+             				    			}
 
              				    			matched.add(match);
              				    		}
@@ -200,19 +212,33 @@ public class Matcher {
 				    		    Date reference = dateFormat.parse("00:00:00");
 				    		    Date date = dateFormat.parse(timetableEntries.get(index).getDepartureTime());
 				    		    double seconds = (date.getTime() - reference.getTime()) / 1000L;
-				    		    
-				    		    
+
+
     				    		
     				    		if(Math.abs(depTime-seconds)<60*15) {
+    				    			
+    				    			 Double secDouble = (Double) seconds;
+    					    		    Double depDouble = (Double) depTime;
+    					    		    String secString = secDouble.toString();
+    					    		    String depString = depDouble.toString();
+    					    		    Integer difference = Integer.parseInt(secString.substring(0, secString.indexOf(".")))-Integer.parseInt(depString.substring(0, depString.indexOf(".")));
+    					    		    int diffFinal = (int) difference;
+    				    			
+
+    					    		    
     				    			MatchedTimetables match = new MatchedTimetables();
     				    			match.setCourseIdOT(thisCourse.getCourseID());
     				    			match.setDepTimeFirstStopMATsim(depTime);
     				    			match.setDepTimeFirstStopOT(seconds);
     				    			match.setRouteIdMATSim(routeName);
     				    			match.setLineIdMATSim(transitLine);
-    				    			match.setVehicleIdMATSim(vehicleIdMATSim);	    		
+    				    			match.setVehicleIdMATSim(vehicleIdMATSim);	  
+    				    			match.setDifferenceOTMATSim(diffFinal);
     				    			matched.add(match);
-    				    			
+    				    			if("2260".equals(thisCourse.getCourseID().toString())) {
+     				    				System.out.println("STOPHERE");
+     				    			}
+
     				    		
     				    		}
      				    	 }
@@ -231,14 +257,23 @@ public class Matcher {
         
         
 
-
+        //Now remove double entries by findnig the one with the closest time:   
+        
+        List<MatchedTimetables> matchedFinal = new ArrayList<>(matched.stream().collect(
+        	    Collectors.groupingBy(c -> Arrays.asList(c.getVehicleIdMATSim()),      	    		
+          	        Collectors.collectingAndThen(
+        	            Collectors.minBy(Comparator.comparingInt(MatchedTimetables::getDifferenceOTMATSim)),
+        	            Optional::get))).values());
+        
+        List<MatchedTimetables> matchedFinalFinal = new ArrayList<>(matchedFinal.stream().collect(
+        	    Collectors.groupingBy(c -> Arrays.asList(c.getCourseIdOT()),      	    		
+          	        Collectors.collectingAndThen(
+        	            Collectors.minBy(Comparator.comparingInt(MatchedTimetables::getDifferenceOTMATSim)),
+        	            Optional::get))).values());
         
 		
 		
-		return matched;
-
-        
-//		return null;		
+		return matchedFinalFinal;
 	}
 	
 	public static String getStopCode(TransitRouteStop stop, HstListen liste) {

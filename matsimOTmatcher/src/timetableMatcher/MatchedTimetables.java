@@ -8,10 +8,12 @@ public class MatchedTimetables {
 	private String courseIdOT;
 	private double depTimeFirstStopMATsim;
 	private double depTimeFirstStopOT;
+	private int differenceOTMATSim;
+
 
 	public MatchedTimetables() {}
 
-	public MatchedTimetables(String lineIdMATSim, String routeIdMatsim, String vehicleIdMATSim, String courseIdOT, double depTimeFirstStopMATsim, double depTimeFirstStopOT) {
+	public MatchedTimetables(String lineIdMATSim, String routeIdMatsim, String vehicleIdMATSim, String courseIdOT, double depTimeFirstStopMATsim, double depTimeFirstStopOT, int differenceOTMATSim) {
 		super();
 		this.setLineIdMATSim(lineIdMATSim);
 		this.setCourseIdOT(courseIdOT);
@@ -19,6 +21,8 @@ public class MatchedTimetables {
 		this.setRouteIdMATSim(vehicleIdMATSim);
 		this.setDepTimeFirstStopMATsim(depTimeFirstStopMATsim);
 		this.setDepTimeFirstStopOT(depTimeFirstStopOT);
+		this.setDifferenceOTMATSim(differenceOTMATSim);
+
 	}
 
 	public String getLineIdMATSim() {
@@ -67,6 +71,14 @@ public class MatchedTimetables {
 
 	public void setVehicleIdMATSim(String vehicleIdMATSim) {
 		this.vehicleIdMATSim = vehicleIdMATSim;
+	}
+
+	public int getDifferenceOTMATSim() {
+		return differenceOTMATSim;
+	}
+
+	public void setDifferenceOTMATSim(int differenceOTMATSim) {
+		this.differenceOTMATSim = differenceOTMATSim;
 	}
 
 

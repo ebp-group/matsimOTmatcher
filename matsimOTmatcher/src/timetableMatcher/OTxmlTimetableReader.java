@@ -10,8 +10,11 @@ import OTtimetableObject.Timetable;
 
 /**
  * Class for reading a OpenTrack timetable in xml format. 
- * IMPORTANT: Before reading it in, it is necessary to remove the first three lines otherwise the Unmarshaller will not be able to read it. The first line of the xml file should be: 
- * "timetable title="OpenTrack timetable" application="OpenTrack" date="Wed Mar 31 13:23:32 2021""
+ * IMPORTANT: Before reading it in, it is necessary to manually remove the first three lines of the .xml timetable, or to remove it in the read file, otherwise the unmarshaller 
+ * will not be able to read it. Here an example of the three lines to be removed: 
+ * <?xml version="1.0"?>
+*<?xml-stylesheet?>
+*<!DOCTYPE timetable SYSTEM "Scenario 0_base.dtd">
  * 
  * @author Lucas Meyer de Freitas, EBP
  *
