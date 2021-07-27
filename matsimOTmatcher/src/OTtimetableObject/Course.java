@@ -26,7 +26,7 @@ public class Course {
 	public void setCourseID(String courseID) {
 		this.courseID = courseID;
 	}
-
+	
     @XmlElement(name="timetableEntry")
 	public List<TimetableEntry> getTimetableEntryList() {
 		return timetableEntryList;

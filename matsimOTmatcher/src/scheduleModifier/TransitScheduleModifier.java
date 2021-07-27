@@ -184,8 +184,8 @@ public class TransitScheduleModifier {
 	    						 arrOffset = 0;
 	    	    				 depOffset = 0;	
 	    					} else {   						
-	     				 String arrivalTime = otStop.getArrivalTime();
-	    				 String departureTime = otStop.getDepartureTime();
+	     				 String arrivalTime = otStop.getArrival().getArrivalTime();
+	    				 String departureTime = otStop.getDeparture().getDepartureTime();
 	    				 String[] arr = arrivalTime.split(":");
 	    				 String[] dep = departureTime.split(":");
 	    				 double arrDouble = Double.parseDouble(arr[0])*3600 + Double.parseDouble(arr[1])*60 + Double.parseDouble(arr[2]);

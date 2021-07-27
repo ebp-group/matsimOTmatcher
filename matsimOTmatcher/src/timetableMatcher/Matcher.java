@@ -159,7 +159,7 @@ public class Matcher {
              				    		
              						    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
         				    		    Date reference = dateFormat.parse("00:00:00");
-        				    		    Date date = dateFormat.parse(timetableEntries.get(0).getDepartureTime());
+        				    		    Date date = dateFormat.parse(timetableEntries.get(0).getDeparture().getDepartureTime());
         				    		    double seconds = (date.getTime() - reference.getTime()) / 1000L;
         				    		    
         				    		    
@@ -210,7 +210,7 @@ public class Matcher {
     				    		
     						    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 				    		    Date reference = dateFormat.parse("00:00:00");
-				    		    Date date = dateFormat.parse(timetableEntries.get(index).getDepartureTime());
+				    		    Date date = dateFormat.parse(timetableEntries.get(index).getDeparture().getDepartureTime());
 				    		    double seconds = (date.getTime() - reference.getTime()) / 1000L;
 
 
@@ -324,7 +324,7 @@ public class Matcher {
 			                                      .collect(Collectors.toList()));
 			
 			List<TimetableEntry> newestTimetableEntry = (newTimetableEntry.stream()
-                    .filter(e -> !"HH:MM:SS".equals(e.getDepartureTime()))
+                    .filter(e -> !"HH:MM:SS".equals(e.getDeparture().getDepartureTime()))
                     .collect(Collectors.toList()));
 			
 			if(newestTimetableEntry.size()>0) {

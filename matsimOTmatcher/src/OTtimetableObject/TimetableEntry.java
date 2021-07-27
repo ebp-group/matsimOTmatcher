@@ -7,20 +7,20 @@ public class TimetableEntry {
 	
 	private String stopInformation;
 	private String stationID;
-	private String arrivalTime;
-	private String departureTime;
+	private Arrival arrival;
+	private Departure departure;
 	private Double waitTime;
 	private Double delayTime;
 	
     public TimetableEntry() {}
     
-    public TimetableEntry(String stopInformation, String stationID, String arrivalTime, String departureTime, Double waitTime,
+    public TimetableEntry(String stopInformation, String stationID, Arrival arrival, Departure departure, Double waitTime,
     		Double delayTime) {
         super();
         this.setStopInformation(stopInformation);
         this.setStationID(stationID);
-        this.setArrivalTime(arrivalTime);
-        this.setDepartureTime(departureTime);
+        this.setArrival(arrival);
+        this.setDeparture(departure);
         this.setWaitTime(waitTime);
         this.setDelayTime(delayTime);
     }
@@ -44,22 +44,22 @@ public class TimetableEntry {
 	}
 
 	@XmlElement(name="arrivalTime")
-	public String getArrivalTime() {
-		return arrivalTime;
+	public Arrival getArrival() {
+		return arrival;
 	}
 
-	public void setArrivalTime(String arrivalTime) {
-		this.arrivalTime = arrivalTime;
+	public void setArrival(Arrival arrival) {
+		this.arrival = arrival;
 	}
 
-	@XmlElement(name="departureTime")
-	public String getDepartureTime() {
-		return departureTime;
-	}
-
-	public void setDepartureTime(String departureTime) {
-		this.departureTime = departureTime;
-	}
+//	@XmlElement(name="departureTime")
+//	public String getDepartureTime() {
+//		return departureTime;
+//	}
+//
+//	public void setDepartureTime(String departureTime) {
+//		this.departureTime = departureTime;
+//	}
 
 	@XmlElement(name="waitTime")
 	public Double getWaitTime() {
@@ -77,6 +77,15 @@ public class TimetableEntry {
 
 	public void setDelayTime(Double delayTime) {
 		this.delayTime = delayTime;
+	}
+
+	@XmlElement(name="departureTime")
+	public Departure getDeparture() {
+		return departure;
+	}
+
+	public void setDeparture(Departure departure) {
+		this.departure = departure;
 	}
 
 }
