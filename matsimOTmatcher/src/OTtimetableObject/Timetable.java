@@ -1,6 +1,8 @@
 package OTtimetableObject;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -34,11 +36,51 @@ public class Timetable {
 		this.courseList = courseList;
 	}
 	
-	public Timetable getActualTimesTimetable(Timetable thisTimetable) {
+	public void getActualTimesTimetable(Timetable thisTimetable) {
 		
 		
+		//1- First remove the timetable entries that do not run
+		courseList = thisTimetable.getCourseList();
 		
-		return thisTimetable;	
+			for (ListIterator<Course> course = courseList.listIterator(); course.hasNext();) {
+				Course thisCourse = course.next();
+			 List<TimetableEntry> timetableEntryList = thisCourse.getTimetableEntryList();
+			 
+				for (ListIterator<TimetableEntry> timetableEntry = timetableEntryList.listIterator(); timetableEntry.hasNext();) {
+					TimetableEntry thisEntry = timetableEntry.next();
+					
+					//Remove the entry if both departure and arrival are planned
+					if(thisEntry.getArrival().getType().equals("planned") && thisEntry.getDeparture().getType().equals("planned")) {
+					 timetableEntry.remove();
+
+					} 	
+				}	
+				
+				if(timetableEntryList.isEmpty()) {
+					course.remove();
+				}
+		}
+		
+		
+		//2- Now check the ones which do run and replace HH:MM:SS with null
+		for (Course course : courseList) {
+			 List<TimetableEntry> timetableEntryList = course.getTimetableEntryList();
+			 
+				for (ListIterator<TimetableEntry> timetableEntry = timetableEntryList.listIterator(); timetableEntry.hasNext();) {
+					TimetableEntry thisEntry = timetableEntry.next();
+					
+					if(thisEntry.getArrival().getArrivalTime().toString().equals("HH:MM:SS")) {
+						thisEntry.setArrival(null);					 	
+					} else if(thisEntry.getDeparture().getDepartureTime().toString().equals("HH:MM:SS")) {
+						thisEntry.setDeparture(null);					 	
+
+					}
+				}				
+		}
+		
+		
+
+		
 	}
     
     

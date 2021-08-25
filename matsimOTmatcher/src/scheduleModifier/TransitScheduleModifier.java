@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.matsim.pt.transitSchedule.TransitRouteStopImpl;
 import org.matsim.pt.transitSchedule.api.Departure;
@@ -29,14 +31,30 @@ import timetableMatcher.MatchedTimetables;
  * 2-Remove this departure from the MATSim route
  * 3-Create a new route with updated departure (from OpenTrack) and compute new stop arrival and departure times for all stops.
  * 4-Add newly created route to the line. This new route therefore represents one unique course. 
- * 
+ *
  * Newly created routes have an additional _X suffix at the route number. 
  *
+ *
+ *When working with the actual timetable (actual instead of planned OT-arrival and departure times), sometimes a stop might not actually have an actual time, eg. 
+ *the XML file logs HH:MM:SS instead of a time stamp. This can happen for three reasons: 
+ *
+ *-The train does not stop at a station but only passes it. This is where stopInformation=”no”. Then actual arrival time is always “HH:MM:SS” and actual departure time is the time the train passed the station. 
+ *These are not stations though, only Betriepspunkte (or passing points) and are not relevant for MATSim which only considers stations. 
+*-End stop of a line: Then actual departure is “HH:MM:SS” except when a dwell time has been set, then it will show an actual departure time. 
+*-First stop of a line: Then actual arrival will be “HH:MM:SS” and only actual departure time will be shown. 
+*
+*When this occurs, the code assigns a 00:00:00 value to the actual arrival or departure times, meaning that the remaining values of arrival or departure offset are invalid for the rest of the line. 
  */
+
 public class TransitScheduleModifier {
 	
+	// Create a Logger
+    Logger logger
+        = Logger.getLogger(
+        		TransitScheduleModifier.class.getName());
 	
-	public void modifySchedule(TransitSchedule transitSchedule, List<MatchedTimetables> matchedTimetables , Timetable otTimetable, HstListen hst){
+	
+ public void modifySchedule(TransitSchedule transitSchedule, List<MatchedTimetables> matchedTimetables , Timetable otTimetable, HstListen hst, boolean useActualTimesOnly){
 		int i=0;
 		int k=0;
 				
@@ -44,7 +62,10 @@ public class TransitScheduleModifier {
 	      ArrayList<String> names = new ArrayList<String>(hst.getNames().values());
 	      ArrayList<String> abkz = new ArrayList<String>(hst.getAbkuerzungen().values());
 	      
-
+	      //Remove planned departure and arrival times if so selected
+	      if(useActualTimesOnly) {
+	    	  otTimetable.getActualTimesTimetable(otTimetable);	   
+	      }
 
 		//Copy the transit schedule
 		TransitSchedule modifiedTransitSchedule = transitSchedule;
@@ -64,6 +85,10 @@ public class TransitScheduleModifier {
 					  .findAny()
 					  .orElse(null);
 			
+			if(Objects.isNull(course)) {
+				//Do nothing
+			} else {
+				
 			List<TimetableEntry> timetableEntries = course.getTimetableEntryList();
 			
 			//Create timetableEntryList only for stops which actually have a stop information 
@@ -85,7 +110,6 @@ public class TransitScheduleModifier {
 				//Get matched routes
 
 				if(lineInMatchedLines(route, thisOne)) {
-//					System.out.println("Matched line index is "+lineInd);
 					
 
 		Map<Id<Departure>, Departure> departures = route.getDepartures();
@@ -96,7 +120,6 @@ public class TransitScheduleModifier {
    	 for(Map.Entry<Id<Departure>, Departure> departure:departures.entrySet()) {   	
 
 			if(departure.getValue().getDepartureTime()==depTime) {
-//				System.out.println("IT'S A MATCH!");
    		Id<Departure> key = departure.getKey();
    		depKeys.add(key);
 			}
@@ -104,7 +127,6 @@ public class TransitScheduleModifier {
    	 
    	 //Iterate through matched departures
    	 for( Iterator<Id<Departure>> iterKeys = depKeys.iterator();iterKeys.hasNext();) {
-//   		 System.out.println("matched departure index "+counter);
    	             Id<Departure> depKey = iterKeys.next();
    	             Departure thisDeparture = departures.get(depKey);
    	             
@@ -116,7 +138,6 @@ public class TransitScheduleModifier {
    	          		
 				    //1-Copy route and departure id into a new route
 					TransitRoute routeNew = modifiedRoute;
-//					System.out.println("Size 1 is "+ routeNew.getDepartures().size());
 					
 					//2-Remove modified departure from existing route
 					modifiedRoute.removeDeparture(thisDeparture);
@@ -165,7 +186,6 @@ public class TransitScheduleModifier {
 	    				 
 		 				 TransitRouteStopImpl.Builder builder = new TransitRouteStopImpl.Builder();
 
-//		 				System.out.println(aa);
 	    				 //If stop is not found, just add the time from the last stop
 	    				 if(Objects.isNull(otStop) && aa != 0) {
 	    					builder.arrivalOffset(arrOffsetPrevious + thisArrOffset - matsimArrPrevious);
@@ -183,11 +203,33 @@ public class TransitScheduleModifier {
 	    					if(aa==0) {
 	    						 arrOffset = 0;
 	    	    				 depOffset = 0;	
-	    					} else {   						
-	     				 String arrivalTime = otStop.getArrival().getArrivalTime();
-	    				 String departureTime = otStop.getDeparture().getDepartureTime();
+	    					} else {
+	    						
+	    				
+	    				String arrivalTime;
+	    				String departureTime;
+	    				
+	    			
+	    		        logger.setLevel(Level.WARNING);
+
+	    				try {
+	     				  arrivalTime = otStop.getArrival().getArrivalTime();
+	    				} catch (NullPointerException nullOne) {
+	    					 arrivalTime="00:00:00";
+	    					 if(aa != 0) {
+	    						 logger.warning("Course " + course.getCourseID() + ", stop "+ otStop.getStationID() + ". Null actual arrival time value, all arrival times beyond this point for this course are invalid");
+	    					 }
+	    				}
+	    				
+	    				try {
+	    					departureTime = otStop.getDeparture().getDepartureTime();
+	    				} catch (NullPointerException nullTwo) {
+	    					departureTime="00:00:00";
+	    					 logger.warning("Course " + course.getCourseID() + ", stop "+ otStop.getStationID() + ". Null actual departure time value, all arrival times beyond this point for this course are invalid");
+	    				}
 	    				 String[] arr = arrivalTime.split(":");
 	    				 String[] dep = departureTime.split(":");
+	    				 
 	    				 double arrDouble = Double.parseDouble(arr[0])*3600 + Double.parseDouble(arr[1])*60 + Double.parseDouble(arr[2]);
 	    				 double depDouble = Double.parseDouble(dep[0])*3600 + Double.parseDouble(dep[1])*60 + Double.parseDouble(dep[2]);
 	    				
@@ -223,10 +265,8 @@ public class TransitScheduleModifier {
 					modifiedLine.addRoute(newRoute);
 					
 					List<TransitRouteStop> stopsNewRoute = newRoute.getStops();
-//			          System.out.println("StopCodeNewRoute:");
 		   	          for (int oo = 0; oo < stopsNewRoute.size(); oo++) {
 		   	        	  TransitRouteStop stopNR = stopsNewRoute.get(oo);
-//		   	        	  System.out.println(stopNR.getStopFacility().getAttributes().getAttribute("03_Stop_Code"));
 		   	        	  
 		   	          }			
 				
@@ -235,7 +275,6 @@ public class TransitScheduleModifier {
 					
 	
 							}
-//System.out.println("Total matched departures are: "+ counter);
 					
 				}
 				}
@@ -243,6 +282,7 @@ public class TransitScheduleModifier {
 			lineInd++;
 			
 	}
+		}
 	}
 			
 			

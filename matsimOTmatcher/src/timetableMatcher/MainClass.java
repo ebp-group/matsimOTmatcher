@@ -40,7 +40,8 @@ public class MainClass {
 		
 		//Read OT timetable
 		Timetable otTimetable = OTxmlTimetableReader.readTimetable(Constants.PATH_OT_TIMETABLE);
-			
+		
+						
 		HstListen listenHst = ReadDienstellen.didok(Constants.PATH_DIENSTELLEN);
 
 		Matcher matcher = new Matcher();
@@ -53,11 +54,6 @@ public class MainClass {
 	    		  .filter(c -> c.getCourseID().equals("29431"))
 	    		  .collect(Collectors.toList());
 	     
-//		  List<String> lines =  new ArrayList<String>();
-//				  lines.add("SBB_2020_009-D-11654");
-//				  lines.add("SBB_2020_009-D-11658");
-//				  lines.add("SBB_2020_009-D-12062");
-//				  lines.add("SBB_2020_011-D-12061");
 	
 
 
@@ -73,42 +69,45 @@ public class MainClass {
 
 		
 //		TransitSchedule newSchedule = modifier.modifySchedule(schedule, matchedTimetables, otTimetable, listenHst);
-		modifier.modifySchedule(schedule, matchedTimetables, otTimetable, listenHst);
+		modifier.modifySchedule(schedule, matchedTimetables, otTimetable, listenHst, true);
 
 		//Write new Schedule to File
 //		TransitScheduleWriter writer = new TransitScheduleWriter(schedule);
 //		writer.writeFile(Constants.PATH_NEW_TRANSIT_SCHEDULE);
 	
 		//Now find missing ones: 
-	    List<String> lookup = otTimetable.getCourseList().stream()
-                .map(d -> d.getCourseID())
-                .collect(Collectors.toList());
-	    
-  Map<Id<TransitLine>, TransitLine> lines = schedule.getTransitLines();
+//	    List<String> lookup = otTimetable.getCourseList().stream()
+//                .map(d -> d.getCourseID())
+//                .collect(Collectors.toList());
+//	    
+//  Map<Id<TransitLine>, TransitLine> lines = schedule.getTransitLines();
+//        
+//	List<String> allRoutes = new ArrayList<String>();
+//
+//	int k=0;
+//        for (Map.Entry<Id<TransitLine>, TransitLine> entry : lines.entrySet()) {
+//        	System.out.println(k);
+//        	TransitLine line = entry.getValue();
+//        	Map<Id<TransitRoute>, TransitRoute> routes = line.getRoutes();
+//        	for(Map.Entry<Id<TransitRoute>, TransitRoute>  entryRoute : routes.entrySet()) {
+//        		TransitRoute route = entryRoute.getValue();
+//        		
+//        		String routeID = route.getAttributes().getAttribute("03_LineRouteName").toString();
+//        		allRoutes.add(routeID);
+//        		k++;
+//        	}}
         
-	List<String> allRoutes = new ArrayList<String>();
-
-        for (Map.Entry<Id<TransitLine>, TransitLine> entry : lines.entrySet()) {
-        	TransitLine line = entry.getValue();
-        	Map<Id<TransitRoute>, TransitRoute> routes = line.getRoutes();
-        	for(Map.Entry<Id<TransitRoute>, TransitRoute>  entryRoute : routes.entrySet()) {
-        		TransitRoute route = entryRoute.getValue();
-        		String routeID = route.getAttributes().getAttribute("03_LineRouteName").toString();
-        		allRoutes.add(routeID);
-        	}}
-        
 	    
 	    
-	    List<String> matchedIds = matchedTimetables.stream()
-                .map(d -> d.getRouteIdMATSim())
-                .collect(Collectors.toList());
-
-	    List<String> listDistinct = matchedIds.stream().distinct().collect(Collectors.toList());
-
-
-	    //SBB_2020_012-D-12042
-
-	    allRoutes.removeAll(matchedIds);
+//	    List<String> matchedIds = matchedTimetables.stream()
+//                .map(d -> d.getRouteIdMATSim())
+//                .collect(Collectors.toList());
+//
+//	    List<String> listDistinct = matchedIds.stream().distinct().collect(Collectors.toList());
+//
+//
+//
+//	    allRoutes.removeAll(matchedIds);
 	    
 
 
