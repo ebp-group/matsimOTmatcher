@@ -29,7 +29,7 @@ public class MainClass {
 
 	public static void main(String[] args) throws IOException, JAXBException, ParseException {
 		
-		//Read MATSim transit network
+		//Read MATSim transit networkbed
 		Scenario scenario = MATSimTransitScheduleReader.readTransitSchedule(Constants.PATH_MATSIM_TRANSIT_SCHEDULE);
 		
 		TransitSchedule schedule = scenario.getTransitSchedule();
@@ -72,8 +72,8 @@ public class MainClass {
 		modifier.modifySchedule(schedule, matchedTimetables, otTimetable, listenHst, true);
 
 		//Write new Schedule to File
-//		TransitScheduleWriter writer = new TransitScheduleWriter(schedule);
-//		writer.writeFile(Constants.PATH_NEW_TRANSIT_SCHEDULE);
+		TransitScheduleWriter writer = new TransitScheduleWriter(schedule);
+		writer.writeFile(Constants.PATH_NEW_TRANSIT_SCHEDULE);
 	
 		//Now find missing ones: 
 //	    List<String> lookup = otTimetable.getCourseList().stream()

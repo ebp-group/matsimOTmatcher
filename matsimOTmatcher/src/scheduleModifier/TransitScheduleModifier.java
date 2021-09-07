@@ -257,7 +257,7 @@ public class TransitScheduleModifier {
 					
 					Id<TransitRoute> id = Id.create(newId, TransitRoute.class);
 					
-					TransitRouteImpl newRoute = new TransitRouteImpl(id, netRoute, newStops, vehicleIdMatsim);
+					TransitRouteImpl newRoute = new TransitRouteImpl(id, netRoute, newStops, "rail");
 					
 					newRoute.addDeparture(depNew);
 										
