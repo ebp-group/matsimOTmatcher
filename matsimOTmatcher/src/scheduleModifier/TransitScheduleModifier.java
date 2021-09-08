@@ -14,6 +14,7 @@ import org.matsim.pt.transitSchedule.api.TransitLine;
 import org.matsim.pt.transitSchedule.api.TransitRoute;
 import org.matsim.pt.transitSchedule.api.TransitRouteStop;
 import org.matsim.pt.transitSchedule.api.TransitSchedule;
+import org.matsim.visum.VisumNetwork.Stop;
 import org.matsim.api.core.v01.Id;
 import org.matsim.core.population.routes.NetworkRoute;
 import OTtimetableObject.Course;
@@ -93,11 +94,14 @@ public class TransitScheduleModifier {
 			
 			//Create timetableEntryList only for stops which actually have a stop information 
 			List<TimetableEntry> timetableStops = getCoursesWithStops(timetableEntries);
-			
+			if(timetableStops.size()==1) {
+				//do nothing
+			}else {
+				
 			
 		int lineInd =0;
 
-		for ( TransitLine line  : copyValues( transitSchedule.getTransitLines() ) ) {
+		for (TransitLine line  : copyValues( transitSchedule.getTransitLines() ) ) {
 			TransitLine modifiedLine = modifiedTransitSchedule.getTransitLines().get(line.getId());
 			
 			
@@ -190,7 +194,8 @@ public class TransitScheduleModifier {
 	    				 if(Objects.isNull(otStop) && aa != 0) {
 	    					builder.arrivalOffset(arrOffsetPrevious + thisArrOffset - matsimArrPrevious);
 	 						builder.departureOffset(depOffsetPrevious + thisDepOffset - matsimDepPrevious);
-	 						builder.stop(stop.getStopFacility());		
+	 						builder.stop(stop.getStopFacility());
+	 						builder.awaitDepartureTime(true);
 	 						newStops.add(builder.build());
 	 						
 	 						if(thisDepOffset!=0) {
@@ -233,13 +238,25 @@ public class TransitScheduleModifier {
 	    				 double arrDouble = Double.parseDouble(arr[0])*3600 + Double.parseDouble(arr[1])*60 + Double.parseDouble(arr[2]);
 	    				 double depDouble = Double.parseDouble(dep[0])*3600 + Double.parseDouble(dep[1])*60 + Double.parseDouble(dep[2]);
 	    				
-	    				  arrOffset = arrDouble-deptimeOT;
-	    				  depOffset = depDouble-deptimeOT;	
+	    				 if(arrDouble==0) {
+	    					 arrOffset=stop.getArrivalOffset().seconds();
+	    				 } else {
+	    					 arrOffset = arrDouble-deptimeOT;
+	    				 }
+	    				 
+	    				 if(depDouble==0) {
+	    					 depDouble=stop.getDepartureOffset().seconds();
+	    				 } else {
+	    					 depOffset = depDouble-deptimeOT;	
+	    				 }
+	    				  
+	    				
 	    				 }
 	    					
 						builder.arrivalOffset(arrOffset);
 						builder.departureOffset(depOffset);
 						builder.stop(stop.getStopFacility());		
+						builder.awaitDepartureTime(true);
 						newStops.add(builder.build());
 						
 						 arrOffsetPrevious = arrOffset;
@@ -254,6 +271,9 @@ public class TransitScheduleModifier {
 					}
 					NetworkRoute netRoute = routeNew.getRoute();
 					String newId=idRoute+"_"+counter;
+					if(newId.contentEquals("18911_1_27_7")) {
+						System.out.println(newId);
+					}
 					
 					Id<TransitRoute> id = Id.create(newId, TransitRoute.class);
 					
@@ -285,7 +305,7 @@ public class TransitScheduleModifier {
 		}
 	}
 			
-			
+		}	
 		}
 	
 
