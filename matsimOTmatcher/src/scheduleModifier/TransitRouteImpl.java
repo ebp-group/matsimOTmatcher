@@ -49,13 +49,15 @@ public class TransitRouteImpl implements TransitRoute {
 	private final Map<Id<Departure>, Departure> departures = new TreeMap<>();
 	private String transportMode;
 	private String direction;
-	private final Attributes attributes = new Attributes();
+	private Attributes attributes = new Attributes();
 
-	public TransitRouteImpl(final Id<TransitRoute> id, final NetworkRoute route, final List<TransitRouteStop> stops, final String transportMode) {
+	public TransitRouteImpl(final Id<TransitRoute> id, final NetworkRoute route, final List<TransitRouteStop> stops, final String transportMode, final Attributes attributes) {
 		this.routeId = id;
 		this.route = route;
 		this.stops.addAll(stops);
 		this.transportMode = transportMode;
+		this.attributes = attributes;
+
 	}
 
 	@Override
@@ -141,7 +143,10 @@ public class TransitRouteImpl implements TransitRoute {
 		this.direction = direction;
 	}
 
-	@Override
+	public void setAttributes(Attributes attributes) {
+		this.attributes = attributes;
+	}
+	
 	public Attributes getAttributes() {
 		return this.attributes;
 	}

@@ -149,7 +149,8 @@ public class TransitScheduleModifier {
 					
 					//4-Update all other departure times along route departure time from OT
 					DepartureImplNew depNew = new DepartureImplNew(depKey, deptimeOT);
-									
+					
+					depNew.setVehicleId(thisDeparture.getVehicleId());
 					
 					//5-Create new stops with appropriate stop informations
 					//Check if stop is available in list:
@@ -277,7 +278,8 @@ public class TransitScheduleModifier {
 					
 					Id<TransitRoute> id = Id.create(newId, TransitRoute.class);
 					
-					TransitRouteImpl newRoute = new TransitRouteImpl(id, netRoute, newStops, "rail");
+					TransitRouteImpl newRoute = new TransitRouteImpl(id, netRoute, newStops, "rail", modifiedRoute.getAttributes());
+				
 					
 					newRoute.addDeparture(depNew);
 										
