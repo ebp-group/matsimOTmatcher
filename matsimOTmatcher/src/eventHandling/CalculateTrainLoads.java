@@ -11,7 +11,12 @@ import org.matsim.pt.transitSchedule.api.Departure;
 import org.matsim.pt.transitSchedule.api.TransitLine;
 import org.matsim.pt.transitSchedule.api.TransitRoute;
 import org.matsim.pt.transitSchedule.api.TransitSchedule;
-
+/**
+ * 
+ * @author Lucas Meyer de Freitas, EBP
+ * Calculates the loads of (SBB) trains from the events file and transit schedule. 
+ * The selection of for which lines loads are to be calculated can be made by changing the filter in line 35.
+ */
 public class CalculateTrainLoads {
 	
 	public List<StopDepLoad> loadsForTransitRoutes(TransitSchedule schedule, String pathToEventsFile) {

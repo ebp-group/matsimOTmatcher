@@ -39,10 +39,10 @@ import timetableMatcher.MatchedTimetables;
  *When working with the actual timetable (actual instead of planned OT-arrival and departure times), sometimes a stop might not actually have an actual time, eg. 
  *the XML file logs HH:MM:SS instead of a time stamp. This can happen for three reasons: 
  *
- *-The train does not stop at a station but only passes it. This is where stopInformation=”no”. Then actual arrival time is always “HH:MM:SS” and actual departure time is the time the train passed the station. 
+ *-The train does not stop at a station but only passes it. This is where stopInformation=ï¿½noï¿½. Then actual arrival time is always ï¿½HH:MM:SSï¿½ and actual departure time is the time the train passed the station. 
  *These are not stations though, only Betriepspunkte (or passing points) and are not relevant for MATSim which only considers stations. 
-*-End stop of a line: Then actual departure is “HH:MM:SS” except when a dwell time has been set, then it will show an actual departure time. 
-*-First stop of a line: Then actual arrival will be “HH:MM:SS” and only actual departure time will be shown. 
+*-End stop of a line: Then actual departure is ï¿½HH:MM:SSï¿½ except when a dwell time has been set, then it will show an actual departure time. 
+*-First stop of a line: Then actual arrival will be ï¿½HH:MM:SSï¿½ and only actual departure time will be shown. 
 *
 *When this occurs, the code assigns a 00:00:00 value to the actual arrival or departure times, meaning that the remaining values of arrival or departure offset are invalid for the rest of the line. 
  */
@@ -272,9 +272,6 @@ public class TransitScheduleModifier {
 					}
 					NetworkRoute netRoute = routeNew.getRoute();
 					String newId=idRoute+"_"+counter;
-					if(newId.contentEquals("18911_1_27_7")) {
-						System.out.println(newId);
-					}
 					
 					Id<TransitRoute> id = Id.create(newId, TransitRoute.class);
 					
