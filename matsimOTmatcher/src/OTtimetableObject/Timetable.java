@@ -35,7 +35,10 @@ public class Timetable {
 	public void setCourseList(List<Course> courseList) {
 		this.courseList = courseList;
 	}
-	
+	/**
+	 * Removes all entries of the timetable that are only actual. This is used to exclude courses that did not run in a simulation. 
+	 * @param thisTimetable
+	 */
 	public void getActualTimesTimetable(Timetable thisTimetable) {
 		
 		

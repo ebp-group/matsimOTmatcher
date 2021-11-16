@@ -29,7 +29,7 @@ import org.matsim.vehicles.Vehicle;
 /**
  * Describes a single departure along a route in a transit line.
  *
- * @author mrieser
+ * @author mrieser, adapted by Lucas Meyer de Freitas
  */
 public class DepartureImplNew implements Departure {
 

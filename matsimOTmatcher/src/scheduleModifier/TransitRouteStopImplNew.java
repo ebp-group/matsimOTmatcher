@@ -30,7 +30,7 @@ import org.matsim.pt.transitSchedule.api.TransitStopFacility;
  * Describes the stop within a route of a transit line. Specifies also at
  * what time a headway is expected at the stop as offset from the route start.
  *
- * @author mrieser
+ * @author mrieser, adapted to this project by Lucas Meyer de Freitas
  */
 public class TransitRouteStopImplNew implements TransitRouteStop {
 

@@ -39,6 +39,11 @@ import common.Constants;
  *
  */
 
+/**
+ * Return a list containing the matched courses of each timetable. 
+ * @author LMF
+ *
+ */
 public class Matcher {
 		
 	public List<MatchedTimetables> matchMATSimToOT(TransitSchedule schedule, Timetable otTimetable, HstListen hst) throws ParseException{
@@ -92,13 +97,11 @@ public class Matcher {
 		for(Course thisCourse:filteredCourses) {
 			List<TimetableEntry> timetableEntries = thisCourse.getTimetableEntryList();
 			
-			//Do not match if only one stop is available
+			//Do not match if only one stop is available (often the case for shunting-courses in OpenTrack)
 			if(timetableEntries.size()<2 || thisCourse.getCourseID().toString().contains("X") || thisCourse.getCourseID().toString().startsWith("5")) {
 				i++;
-//				System.out.println(thisCourse.getCourseID());
 			}
 		}
-//		System.out.println("COURSES WITH ONLY ONE STOP COUNT IS " + i);    	 
  	   
         
         for (Map.Entry<Id<TransitLine>, TransitLine> entry : lines.entrySet()) {
@@ -123,14 +126,13 @@ public class Matcher {
         			//Put all stops of present MATSIm route in a list
         			List<String> stopCodes = new ArrayList<String>();
         			for (TransitRouteStop stop: stops) {
-//        				System.out.println("Stop is "+j);
         				String stopCode = getStopCode(stop, hst);
         				stopCodes.add(stopCode);
         				allStationNamesMATSIM.add(stopCode);
         			}
         			
         			
-        				//Now iterate through all courses of OT which could have a match: 
+        				//Now iterate through all courses to find all candidate matches within the given time tolerance
         			for(Course thisCourse:filteredCourses) {
         				
         				List<TimetableEntry> timetableEntries = thisCourse.getTimetableEntryList();
@@ -142,10 +144,7 @@ public class Matcher {
                             .map(TimetableEntry::getStationID)
                             .collect(Collectors.toList());
         				     
-        				     //Check if all stopCodes of the MATSim timetable are found in the OT-course
-
- 
-				    		    
+        				     //Check if all stopCodes of the MATSim timetable are found in the OT-course   
         				     int index=Collections.indexOfSubList(stationIdList , stopCodes);
         				     if(index==-1) {
             				     int indexInverse=Collections.indexOfSubList(stopCodes , stationIdList);
@@ -161,23 +160,9 @@ public class Matcher {
         				    		    Date reference = dateFormat.parse("00:00:00");
         				    		    Date date = dateFormat.parse(timetableEntries.get(0).getDeparture().getDepartureTime());
         				    		    double seconds = (date.getTime() - reference.getTime()) / 1000L;
-        				    		    
-        				    		    
-
              				    		
-             				    		if(Math.abs(depTime-seconds)<60*15) {
-             				    			
-             				    	
-             				    			
-             				    			  List<String> linesCheck =  new ArrayList<String>();
-             				    			 linesCheck.add("SBB_2020_009-D-11654");
-             				    			linesCheck.add("SBB_2020_009-D-11658");
-             				    			linesCheck.add("SBB_2020_009-D-12062");
-             								 linesCheck.add("SBB_2020_011-D-12061");
-             								 
-             								 if(linesCheck.contains(transitLine)) {
-             									 System.out.println(transitLine);
-             								 }
+        				    		    //IMPORTANT: The choice of the tolerance of departure times has an impact to the 
+             				    		if(Math.abs(depTime-seconds)<Constants.MATCHER_TIME_TOLERANCE) {
              				    			
              				    			MatchedTimetables match = new MatchedTimetables();
              				    			match.setCourseIdOT(thisCourse.getCourseID());
@@ -186,13 +171,6 @@ public class Matcher {
              				    			match.setRouteIdMATSim(routeName);
              				    			match.setLineIdMATSim(transitLine);
             				    			match.setVehicleIdMATSim(vehicleIdMATSim);	    		
-
-             				    			
-             				    			//CHANGE THE MATSim TRANSIT SCHEDULE HERE
-             				    			
-             				    			if("2260".equals(thisCourse.getCourseID().toString())) {
-             				    				System.out.println("STOPHERE");
-             				    			}
 
              				    			matched.add(match);
              				    		}
@@ -213,9 +191,8 @@ public class Matcher {
 				    		    Date date = dateFormat.parse(timetableEntries.get(index).getDeparture().getDepartureTime());
 				    		    double seconds = (date.getTime() - reference.getTime()) / 1000L;
 
-
-    				    		
-    				    		if(Math.abs(depTime-seconds)<60*15) {
+				    		    //IMPORTANT: The choice of the tolerance of departure times has an impact to the 
+    				    		if(Math.abs(depTime-seconds)<Constants.MATCHER_TIME_TOLERANCE) {
     				    			
     				    			 Double secDouble = (Double) seconds;
     					    		    Double depDouble = (Double) depTime;
@@ -234,12 +211,7 @@ public class Matcher {
     				    			match.setLineIdMATSim(transitLine);
     				    			match.setVehicleIdMATSim(vehicleIdMATSim);	  
     				    			match.setDifferenceOTMATSim(diffFinal);
-    				    			matched.add(match);
-    				    			if("2260".equals(thisCourse.getCourseID().toString())) {
-     				    				System.out.println("STOPHERE");
-     				    			}
-
-    				    		
+    				    			matched.add(match);				    		
     				    		}
      				    	 }
         				     }
@@ -250,14 +222,12 @@ public class Matcher {
         			}   		
         		}
         	}  
-        	//_________ROUTE LEVEL________________//
-//        	System.out.println("Works for: "+counterWorks);
-//    		System.out.println("Doesn't work for: "+counterDoesntWork);
+
         }
         
         
 
-        //Now remove double entries by findnig the one with the closest time:   
+        //Now find the actual course match by finding the one with the closest time:   
         
         List<MatchedTimetables> matchedFinal = new ArrayList<>(matched.stream().collect(
         	    Collectors.groupingBy(c -> Arrays.asList(c.getVehicleIdMATSim()),      	    		
@@ -374,6 +344,11 @@ public class Matcher {
 
 	}
  
+ /**
+  * Method to write the matched courses to a csv-file for checking. 
+  * @param matchMATSimToOT
+  * @throws IOException
+  */
  
  public static void writeMatchedTable(List<MatchedTimetables> matchMATSimToOT) throws IOException {
 		BufferedWriter matchedTimetablesWriter = new BufferedWriter(new FileWriter(Constants.MATCHED_TIMETABLES_FILE));

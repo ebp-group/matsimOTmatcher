@@ -19,4 +19,5 @@ public abstract class Constants {
 
 	public static final String PATH_NEW_TRANSIT_SCHEDULE = "C:\\Users\\lmf\\OneDrive - EBP\\Desktop\\SBB_FF\\43_Berechnungen_Untersuchungen\\Matcher Outputs\\modifiedTransitSchedule.xml.gz";
 
+	public static final int MATCHER_TIME_TOLERANCE = 60*15; // in Seconds!
 }

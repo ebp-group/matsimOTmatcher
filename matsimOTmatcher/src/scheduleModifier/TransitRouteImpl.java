@@ -38,7 +38,7 @@ import org.matsim.utils.objectattributes.attributable.Attributes;
 /**
  * Describes a route of a transit line, including its stops and the departures along this route.
  *
- * @author mrieser
+ * @author mrieser, adapted by Lucas Meyer de Freitas
  */
 public class TransitRouteImpl implements TransitRoute {
 
